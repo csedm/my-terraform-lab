@@ -3,7 +3,8 @@ terraform {
   cloud {
       organization = "my-terraform-lab-csedm"
       workspaces {
-        name = "my-terraform-lab"
+        #name = "my-terraform-lab"
+        tags = ["my-terraform-lab"]
       }
   }
   
