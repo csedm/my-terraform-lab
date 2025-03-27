@@ -1,0 +1,22 @@
+variable "tfe_organization" {
+  description = "TFE organization to use for querying HCP Terraform remote state data."
+  nullable    = false
+}
+variable "tfe_token" {
+  description = "Token to provide to TFE provider needed to query remote state resources."
+  nullable    = false
+  sensitive   = true
+}
+variable "region" {
+  default = "us-east-2"
+}
+variable "availability_zone" {
+  default = "us-east-2a"
+}
+variable "env_map" {
+  type = map(any)
+  default = {
+    "mytflab-mgt-services-dev"  = "dev"
+    "mytflab-mgt-services-prod" = "prod"
+  }
+}
