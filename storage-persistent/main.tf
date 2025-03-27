@@ -29,7 +29,13 @@ resource "aws_efs_file_system" "mgt-efs" {
   performance_mode = "generalPurpose"
   throughput_mode  = "bursting"
   encrypted        = "true"
-
+  protection {
+    replication_overwrite = "ENABLED"
+  }
+  lifecycle_policy {
+    transition_to_ia      = "AFTER_30_DAYS"
+    transition_to_archive = "AFTER_60_DAYS"
+  }
 }
 
 # Create the mount point
