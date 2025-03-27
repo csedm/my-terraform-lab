@@ -37,6 +37,14 @@ resource "aws_efs_file_system" "mgt-efs" {
   }
 }
 
+resource "aws_efs_backup_policy" "efs-backup-policy" {
+  file_system_id = aws_efs_file_system.mgt-efs.id
+
+  backup_policy {
+    status = "ENABLED"
+  }
+}
+
 # Create the mount point
 resource "aws_efs_mount_target" "mgt-efs-mt" {
   file_system_id  = aws_efs_file_system.mgt-efs.id
