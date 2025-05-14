@@ -15,3 +15,12 @@ variable "tfe_token" {
 variable "region" {
   default = "us-east-2"
 }
+variable "ec2_instance_type" {
+  description = "EC2 instance type"
+  type        = string
+  default     = "t2.micro"
+}
+variable "ssh_public_key_file" {
+  description = "SSH public key file"
+  type        = string
+}

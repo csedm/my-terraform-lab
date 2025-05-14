@@ -35,8 +35,8 @@ data "tfe_outputs" "storage_persistent" {
 }
 
 resource "aws_key_pair" "terraform_ec2_key" {
-  key_name   = "terraform_ec2_key"
-  public_key = file("id_ed25519_aws.pub")
+  key_name   = "${terraform.workspace}-ssh-key"
+  public_key = file(var.ssh_public_key_file)
 }
 
 data "aws_ami" "amazon-linux-2" {
@@ -53,9 +53,9 @@ resource "random_pet" "mgt_name" {}
 
 resource "aws_instance" "mgt" {
   ami                         = data.aws_ami.amazon-linux-2.id
-  instance_type               = "t2.micro"
+  instance_type               = var.ec2_instance_type
   availability_zone           = data.tfe_outputs.network_core_outputs.values.aws_subnets_private[0].availability_zone
-  key_name                    = "terraform_ec2_key"
+  key_name                    = aws_key_pair.terraform_ec2_key.key_name
   subnet_id                   = data.tfe_outputs.network_core_outputs.values.aws_subnets_private[0].id
   vpc_security_group_ids      = [aws_security_group.mgt-sg.id]
   user_data_replace_on_change = true
@@ -122,9 +122,9 @@ resource "random_pet" "bastion_name" {}
 
 resource "aws_instance" "bastion" {
   ami                         = data.aws_ami.amazon-linux-2.id
-  instance_type               = "t2.micro"
+  instance_type               = var.ec2_instance_type
   availability_zone           = data.tfe_outputs.network_core_outputs.values.aws_subnets_private[0].availability_zone
-  key_name                    = "terraform_ec2_key"
+  key_name                    = aws_key_pair.terraform_ec2_key.key_name
   subnet_id                   = data.tfe_outputs.network_core_outputs.values.aws_subnets_public[0].id
   vpc_security_group_ids      = [aws_security_group.bastion-sg.id]
   associate_public_ip_address = true
