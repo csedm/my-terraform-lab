@@ -3,6 +3,13 @@
 
 provider "aws" {
   region = var.region
+  default_tags {
+    tags = {
+      Origin_Repo               = var.origin_repo
+      Environment               = local.environment
+      Terraform_Workspace       = terraform.workspace
+    }
+  }
 }
 
 provider "random" {}
@@ -12,15 +19,19 @@ provider "tfe" {
   token        = var.tfe_token
 }
 
+locals {
+  environment = regex("(prd|tst|dev)$", "${terraform.workspace}")[0]
+}
+
 # Data blocks
 data "tfe_outputs" "network_core_outputs" {
   organization = var.tfe_organization
-  workspace    = "mytflab-network-core-${lookup(var.env_map, terraform.workspace)}"
+  workspace    = "mytflab-network-core-${local.environment}"
 }
 
 data "tfe_outputs" "storage_persistent" {
   organization = var.tfe_organization
-  workspace    = "mytflab-storage-persistent-${lookup(var.env_map, terraform.workspace)}"
+  workspace    = "mytflab-storage-persistent-${local.environment}"
 }
 
 resource "aws_key_pair" "terraform_ec2_key" {
@@ -55,7 +66,7 @@ resource "aws_instance" "mgt" {
 
   tags = {
     Name = random_pet.mgt_name.id
-    sla  = "exp"
+    ansible_roles = "mgmt"
   }
 }
 
@@ -120,8 +131,7 @@ resource "aws_instance" "bastion" {
 
   tags = {
     name = random_pet.bastion_name.id
-    sla  = "exp"
-    role = "bastion"
+    ansible_roles = "bastion"
   }
 }
 

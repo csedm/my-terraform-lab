@@ -1,3 +1,8 @@
+variable "origin_repo" {
+  description = "The origin repository for the module"
+  type        = string
+  default     = "my-terraform-lab"
+}
 variable "tfe_organization" {
   description = "TFE organization to use for querying HCP Terraform remote state data."
   nullable    = false
@@ -9,14 +14,4 @@ variable "tfe_token" {
 }
 variable "region" {
   default = "us-east-2"
-}
-variable "availability_zone" {
-  default = "us-east-2a"
-}
-variable "env_map" {
-  type = map(any)
-  default = {
-    "mytflab-mgt-services-dev"  = "dev"
-    "mytflab-mgt-services-prod" = "prod"
-  }
 }
