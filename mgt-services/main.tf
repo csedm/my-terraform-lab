@@ -72,7 +72,7 @@ resource "aws_instance" "mgt" {
 
 # Security Groups - mgt
 resource "aws_security_group" "mgt-sg" {
-  name        = "${random_pet.mgt_name.id}-mgt-sg"
+  name        = "mgt-sg"
   description = "allow inbound ssh traffic from bastion"
   vpc_id      = data.tfe_outputs.network_core_outputs.values.aws_vpc_id
   lifecycle {
