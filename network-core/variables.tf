@@ -23,5 +23,5 @@ variable "vpc_cidr_block" {
 variable "vpc_ipv6_cidr_block" {
   description = "IPv6 CIDR block for the VPC"
   type        = string
-  default     = "fd00:1:cafe::/56"
+  default     = "fd00::/56"
 }*/

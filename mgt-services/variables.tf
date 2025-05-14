@@ -24,3 +24,13 @@ variable "ssh_public_key_file" {
   description = "SSH public key file"
   type        = string
 }
+variable "permitted_cidrs_ipv4" {
+  description = "CIDR blocks for permitted IPv4 access"
+  type        = list(string)
+  default = [ "0.0.0.0/0" ]
+}
+variable "permitted_cidrs_ipv6" {
+  description = "CIDR blocks for permitted IPv6 access"
+  type        = list(string)
+  default = [ "::/0" ]
+}
