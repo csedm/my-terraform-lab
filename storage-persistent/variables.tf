@@ -20,3 +20,8 @@ variable "env_map" {
     "mytflab-storage-persistent-prod" = "prod"
   }
 }
+variable "subnet_cidr_id" {
+  description = "CIDR ID for the subnet"
+  type        = string
+  default     = "31"
+}

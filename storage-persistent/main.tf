@@ -18,7 +18,7 @@ data "tfe_outputs" "network_core_outputs" {
 
 # needs the VPC ID from network-core
 resource "aws_subnet" "subnet-efs" {
-  cidr_block        = "10.2.2.0/24"
+  cidr_block        = cidrsubnet(data.tfe_outputs.network_core_outputs.values.aws_vpc_ipv4_cidr_block, 8, var.subnet_cidr_id)
   vpc_id            = data.tfe_outputs.network_core_outputs.values.aws_vpc_id
   availability_zone = var.availability_zone
 }

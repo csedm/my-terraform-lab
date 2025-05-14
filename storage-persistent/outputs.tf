@@ -20,4 +20,5 @@ output "aws_subnet_efs" {
     availability_zone    = aws_subnet.subnet-efs.availability_zone
     availability_zone_id = aws_subnet.subnet-efs.availability_zone_id
   }
+  sensitive = true
 }
