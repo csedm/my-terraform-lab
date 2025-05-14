@@ -3,14 +3,28 @@
 
 provider "aws" {
   region = var.region
+  default_tags {
+    tags = {
+      Origin_Repo               = var.origin_repo
+      Environment               = local.environment
+      Terraform_Workspace       = terraform.workspace
+    }
+  }
+}
+
+locals {
+  environment = regex("(prd|tst|dev)$","${terraform.workspace}")[0]
 }
 
 # VPC & networking
 resource "aws_vpc" "mytf" {
-  cidr_block                       = "10.2.0.0/16"
+  cidr_block                       = var.vpc_cidr_block
   assign_generated_ipv6_cidr_block = true
   enable_dns_hostnames             = true
   enable_dns_support               = true
+  tags = {
+    Name        = "${terraform.workspace}-vpc"
+  }
 }
 
 resource "aws_internet_gateway" "gw" {
@@ -45,7 +59,7 @@ resource "aws_route" "ipv6-private-egress-route" {
 resource "aws_subnet" "public" {
   vpc_id                          = aws_vpc.mytf.id
   availability_zone               = var.availability_zone
-  cidr_block                      = "10.2.0.0/24"
+  cidr_block                      = cidrsubnet(var.vpc_cidr_block, 8, 0)
   ipv6_cidr_block                 = cidrsubnet(aws_vpc.mytf.ipv6_cidr_block, 8, 0)
   map_public_ip_on_launch         = true
   assign_ipv6_address_on_creation = true
@@ -55,7 +69,7 @@ resource "aws_subnet" "public" {
 resource "aws_subnet" "private" {
   vpc_id                          = aws_vpc.mytf.id
   availability_zone               = var.availability_zone
-  cidr_block                      = "10.2.1.0/24"
+  cidr_block                      = cidrsubnet(var.vpc_cidr_block, 8, 1)
   ipv6_cidr_block                 = cidrsubnet(aws_vpc.mytf.ipv6_cidr_block, 8, 1)
   assign_ipv6_address_on_creation = true
   depends_on                      = [aws_internet_gateway.gw]
