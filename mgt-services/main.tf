@@ -28,22 +28,6 @@ resource "aws_key_pair" "terraform_ec2_key" {
   public_key = file("id_ed25519_aws.pub")
 }
 
-data "aws_ami" "ubuntu" {
-  most_recent = true
-
-  filter {
-    name   = "name"
-    values = ["ubuntu/images/hvm-ssd/ubuntu-jammy-22.04-amd64-server-*"]
-  }
-
-  filter {
-    name   = "virtualization-type"
-    values = ["hvm"]
-  }
-
-  owners = ["099720109477"] # Canonical
-}
-
 data "aws_ami" "amazon-linux-2" {
   owners      = ["amazon"]
   most_recent = true
@@ -105,18 +89,6 @@ resource "aws_vpc_security_group_egress_rule" "allow_egress_mgt_all_ipv6" {
   ip_protocol       = "-1"
 
 }
-
-/*
-# Security Groups - EFS
-# Rules to allow mgt hosts to access EFS.
-resource "aws_security_group" "efs-sg" {
-   name = "efs-sg"
-   vpc_id = data.tfe_outputs.network_core_outputs.values.aws_vpc_id
-   lifecycle {
-    create_before_destroy = true
-  }
- }
- */
 
 resource "aws_vpc_security_group_ingress_rule" "allow_ingress_efs" {
   security_group_id            = data.tfe_outputs.storage_persistent.values.aws_efs_security_group_id

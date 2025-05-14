@@ -62,22 +62,3 @@ resource "aws_security_group" "efs-sg" {
     create_before_destroy = true
   }
 }
-
-
-/*
-# Needs the MGT security group... this represents a multi-direction dependency
- resource "aws_vpc_security_group_ingress_rule" "allow_ingress_efs" {
-  security_group_id = aws_security_group.efs-sg.id
-  referenced_security_group_id = aws_security_group.mgt-sg.id
-  # NFS
-  from_port = 2049
-  to_port = 2049
-  ip_protocol = "tcp"
-}
-
-resource "aws_vpc_security_group_egress_rule" "allow_egress_efs" {
-  security_group_id = aws_security_group.efs-sg.id
-  referenced_security_group_id = aws_security_group.mgt-sg.id
-  ip_protocol = "-1"
-}
-*/

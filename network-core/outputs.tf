@@ -32,14 +32,3 @@ output "aws_subnet_private" {
     availability_zone_id = aws_subnet.private.availability_zone_id
   }
 }
-
-/*
-output "mgt_private_ip" {
-  value = aws_instance.mgt.private_ip
-}
-*/
-/*
-output "efs_file_system_id" {
-  value = aws_efs_file_system.mgt-efs.id
-}
-*/

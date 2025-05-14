@@ -60,11 +60,3 @@ resource "aws_subnet" "private" {
   assign_ipv6_address_on_creation = true
   depends_on                      = [aws_internet_gateway.gw]
 }
-
-/*
-resource "aws_subnet" "subnet-efs" {
-   cidr_block = "10.2.2.0/24"
-   vpc_id = aws_vpc.mytf.id
-   availability_zone = "${var.availability_zone}"
-}
-*/
