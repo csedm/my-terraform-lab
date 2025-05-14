@@ -39,20 +39,23 @@ resource "aws_key_pair" "terraform_ec2_key" {
   public_key = file(var.ssh_public_key_file)
 }
 
-data "aws_ami" "amazon-linux-2" {
-  owners      = ["amazon"]
+data "aws_ami" "alpine_custom" {
   most_recent = true
-
   filter {
     name   = "name"
-    values = ["amzn2-ami-hvm-*-x86_64-ebs"]
+    values = ["alpine-${var.ami_base_version}-${var.ami_architecture}-bios-cloudinit-custom*"]
   }
+  filter {
+    name   = "virtualization-type"
+    values = ["hvm"]
+  }
+  owners = [var.aws_ami_owner_id]
 }
 
 resource "random_pet" "mgt_name" {}
 
 resource "aws_instance" "mgt" {
-  ami                         = data.aws_ami.amazon-linux-2.id
+  ami                         = data.aws_ami.alpine_custom.id
   instance_type               = var.ec2_instance_type
   availability_zone           = data.tfe_outputs.network_core_outputs.values.aws_subnets_private[0].availability_zone
   key_name                    = aws_key_pair.terraform_ec2_key.key_name
@@ -121,7 +124,7 @@ resource "aws_vpc_security_group_egress_rule" "allow_egress_efs" {
 resource "random_pet" "bastion_name" {}
 
 resource "aws_instance" "bastion" {
-  ami                         = data.aws_ami.amazon-linux-2.id
+  ami                         = data.aws_ami.alpine_custom.id
   instance_type               = var.ec2_instance_type
   availability_zone           = data.tfe_outputs.network_core_outputs.values.aws_subnets_private[0].availability_zone
   key_name                    = aws_key_pair.terraform_ec2_key.key_name

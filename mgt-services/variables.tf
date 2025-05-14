@@ -20,6 +20,23 @@ variable "ec2_instance_type" {
   type        = string
   default     = "t2.micro"
 }
+variable "ami_base_version" {
+  description = "Base version of the Alpine AMI"
+  type        = string
+  default     = "3.21"
+}
+
+variable "ami_architecture" {
+  description = "Architecture for the Alpine AMI (e.g., x86_64)"
+  type        = string
+  default     = "x86_64"
+}
+
+variable "aws_ami_owner_id" {
+  description = "AWS Account ID of the AMI owner"
+  type        = string
+}
+
 variable "ssh_public_key_file" {
   description = "SSH public key file"
   type        = string
