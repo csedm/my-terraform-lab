@@ -5,13 +5,6 @@ provider "aws" {
   region = var.region
 }
 
-provider "random" {}
-
-resource "aws_key_pair" "terraform_ec2_key" {
-  key_name   = "terraform_ec2_key"
-  public_key = file("id_ed25519_aws.pub")
-}
-
 # VPC & networking
 resource "aws_vpc" "mytf" {
   cidr_block                       = "10.2.0.0/16"
@@ -75,69 +68,3 @@ resource "aws_subnet" "subnet-efs" {
    availability_zone = "${var.availability_zone}"
 }
 */
-
-data "aws_ami" "amazon-linux-2" {
-  owners      = ["amazon"]
-  most_recent = true
-
-  filter {
-    name   = "name"
-    values = ["amzn2-ami-hvm-*-x86_64-ebs"]
-  }
-}
-
-#resource "random_pet" "mgt_name" {}
-resource "random_pet" "bastion_name" {}
-
-resource "aws_instance" "bastion" {
-  ami                         = data.aws_ami.amazon-linux-2.id
-  instance_type               = "t2.micro"
-  availability_zone           = var.availability_zone
-  key_name                    = "terraform_ec2_key"
-  subnet_id                   = aws_subnet.public.id
-  vpc_security_group_ids      = [aws_security_group.bastion-sg.id]
-  associate_public_ip_address = true
-
-  tags = {
-    name = random_pet.bastion_name.id
-    sla  = "exp"
-    role = "bastion"
-  }
-}
-
-# Security Groups - bastion
-resource "aws_security_group" "bastion-sg" {
-  name        = "bastion-sg"
-  description = "allow inbound ssh traffic"
-  vpc_id      = aws_vpc.mytf.id
-  lifecycle {
-    create_before_destroy = true
-  }
-}
-resource "aws_vpc_security_group_ingress_rule" "allow_ingress_ssh_ipv4" {
-  security_group_id = aws_security_group.bastion-sg.id
-  cidr_ipv4         = "0.0.0.0/0"
-  from_port         = 22
-  ip_protocol       = "tcp"
-  to_port           = 22
-}
-
-resource "aws_vpc_security_group_ingress_rule" "allow_ingress_ssh_ipv6" {
-  security_group_id = aws_security_group.bastion-sg.id
-  cidr_ipv6         = "::/0"
-  from_port         = 22
-  ip_protocol       = "tcp"
-  to_port           = 22
-}
-
-resource "aws_vpc_security_group_egress_rule" "allow_all_bastion_traffic_ipv4" {
-  security_group_id = aws_security_group.bastion-sg.id
-  cidr_ipv4         = "0.0.0.0/0"
-  ip_protocol       = "-1"
-}
-resource "aws_vpc_security_group_egress_rule" "allow_all_bastion_traffic_ipv6" {
-  security_group_id = aws_security_group.bastion-sg.id
-  cidr_ipv6         = "::/0"
-  ip_protocol       = "-1"
-  
-}
