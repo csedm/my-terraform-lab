@@ -27,7 +27,7 @@ output "aws_subnets_public" {
     }
   ]
 }
-output "aws_subnet_private" {
+output "aws_subnets_private" {
   description = "Private subnets information"
   value = [
     for subnet in aws_subnet.private :
