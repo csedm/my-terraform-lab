@@ -45,19 +45,38 @@ resource "aws_route" "route" {
   gateway_id             = aws_internet_gateway.gw.id
 }
 
-/*
+# Route table for public subnets
+resource "aws_route_table" "public" {
+  vpc_id = aws_vpc.mytf.id
+}
+
 resource "aws_route" "ipv6-egress-route" {
-  route_table_id              = aws_vpc.mytf.main_route_table_id
+  route_table_id              = aws_route_table.public.id
   destination_ipv6_cidr_block = "::/0"
   gateway_id                  = aws_internet_gateway.gw.id
 }
-*/
 
-# enables egress-only ipv6 connectivity for private subnets
+resource "aws_route_table_association" "public" {
+  count          = var.number_availability_zones
+  subnet_id      = aws_subnet.public[count.index].id
+  route_table_id = aws_route_table.public.id
+}
+
+# Route table for private subnets
+resource "aws_route_table" "private" {
+  vpc_id = aws_vpc.mytf.id
+}
+
 resource "aws_route" "ipv6-private-egress-route" {
-  route_table_id              = aws_vpc.mytf.main_route_table_id
+  route_table_id              = aws_route_table.private.id
   destination_ipv6_cidr_block = "::/0"
   egress_only_gateway_id      = aws_egress_only_internet_gateway.ipv6_egress_igw.id
+}
+
+resource "aws_route_table_association" "private" {
+  count          = var.number_availability_zones
+  subnet_id      = aws_subnet.private[count.index].id
+  route_table_id = aws_route_table.private.id
 }
 
 resource "aws_subnet" "public" {
