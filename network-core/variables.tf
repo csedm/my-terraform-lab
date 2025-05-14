@@ -9,6 +9,11 @@ variable "region" {
 variable "availability_zone" {
   default = "us-east-2a"
 }
+variable "number_availability_zones" {
+  description = "Number of availability zones to use"
+  type        = number
+  default     = 2
+}
 variable "vpc_cidr_block" {
   description = "CIDR block for the VPC"
   type        = string

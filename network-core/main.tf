@@ -16,6 +16,10 @@ locals {
   environment = regex("(prd|tst|dev)$","${terraform.workspace}")[0]
 }
 
+data "aws_availability_zones" "available" {
+  state = "available"
+}
+
 # VPC & networking
 resource "aws_vpc" "mytf" {
   cidr_block                       = var.vpc_cidr_block
@@ -57,20 +61,24 @@ resource "aws_route" "ipv6-private-egress-route" {
 }
 
 resource "aws_subnet" "public" {
+  count                          = var.number_availability_zones
+  availability_zone               = data.aws_availability_zones.available.names[count.index]
+  
   vpc_id                          = aws_vpc.mytf.id
-  availability_zone               = var.availability_zone
-  cidr_block                      = cidrsubnet(var.vpc_cidr_block, 8, 0)
-  ipv6_cidr_block                 = cidrsubnet(aws_vpc.mytf.ipv6_cidr_block, 8, 0)
+  cidr_block                      = cidrsubnet(var.vpc_cidr_block, 8, count.index * 2)
+  ipv6_cidr_block                 = cidrsubnet(aws_vpc.mytf.ipv6_cidr_block, 8, count.index * 2)
   map_public_ip_on_launch         = true
   assign_ipv6_address_on_creation = true
   depends_on                      = [aws_internet_gateway.gw]
 }
 
 resource "aws_subnet" "private" {
+  count                          = var.number_availability_zones
+  availability_zone               = data.aws_availability_zones.available.names[count.index]
+  
   vpc_id                          = aws_vpc.mytf.id
-  availability_zone               = var.availability_zone
-  cidr_block                      = cidrsubnet(var.vpc_cidr_block, 8, 1)
-  ipv6_cidr_block                 = cidrsubnet(aws_vpc.mytf.ipv6_cidr_block, 8, 1)
+  cidr_block                      = cidrsubnet(var.vpc_cidr_block, 8, count.index * 2 + 1)
+  ipv6_cidr_block                 = cidrsubnet(aws_vpc.mytf.ipv6_cidr_block, 8, count.index * 2 + 1)
   assign_ipv6_address_on_creation = true
   depends_on                      = [aws_internet_gateway.gw]
 }
