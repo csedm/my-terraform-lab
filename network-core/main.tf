@@ -5,15 +5,15 @@ provider "aws" {
   region = var.region
   default_tags {
     tags = {
-      Origin_Repo               = var.origin_repo
-      Environment               = local.environment
-      Terraform_Workspace       = terraform.workspace
+      Origin_Repo         = var.origin_repo
+      Environment         = local.environment
+      Terraform_Workspace = terraform.workspace
     }
   }
 }
 
 locals {
-  environment = regex("(prd|tst|dev)$","${terraform.workspace}")[0]
+  environment = regex("(prd|tst|dev)$", "${terraform.workspace}")[0]
 }
 
 data "aws_availability_zones" "available" {
@@ -27,7 +27,7 @@ resource "aws_vpc" "mytf" {
   enable_dns_hostnames             = true
   enable_dns_support               = true
   tags = {
-    Name        = "${terraform.workspace}-vpc"
+    Name = "${terraform.workspace}-vpc"
   }
 }
 
@@ -80,9 +80,9 @@ resource "aws_route_table_association" "private" {
 }
 
 resource "aws_subnet" "public" {
-  count                          = var.number_availability_zones
-  availability_zone               = data.aws_availability_zones.available.names[count.index]
-  
+  count             = var.number_availability_zones
+  availability_zone = data.aws_availability_zones.available.names[count.index]
+
   vpc_id                          = aws_vpc.mytf.id
   cidr_block                      = cidrsubnet(var.vpc_cidr_block, 8, count.index * 2)
   ipv6_cidr_block                 = cidrsubnet(aws_vpc.mytf.ipv6_cidr_block, 8, count.index * 2)
@@ -92,9 +92,9 @@ resource "aws_subnet" "public" {
 }
 
 resource "aws_subnet" "private" {
-  count                          = var.number_availability_zones
-  availability_zone               = data.aws_availability_zones.available.names[count.index]
-  
+  count             = var.number_availability_zones
+  availability_zone = data.aws_availability_zones.available.names[count.index]
+
   vpc_id                          = aws_vpc.mytf.id
   cidr_block                      = cidrsubnet(var.vpc_cidr_block, 8, count.index * 2 + 1)
   ipv6_cidr_block                 = cidrsubnet(aws_vpc.mytf.ipv6_cidr_block, 8, count.index * 2 + 1)

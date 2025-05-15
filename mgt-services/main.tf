@@ -5,9 +5,9 @@ provider "aws" {
   region = var.region
   default_tags {
     tags = {
-      Origin_Repo               = var.origin_repo
-      Environment               = local.environment
-      Terraform_Workspace       = terraform.workspace
+      Origin_Repo         = var.origin_repo
+      Environment         = local.environment
+      Terraform_Workspace = terraform.workspace
     }
   }
 }
@@ -68,7 +68,7 @@ resource "aws_instance" "mgt" {
   })
 
   tags = {
-    Name = random_pet.mgt_name.id
+    Name          = random_pet.mgt_name.id
     ansible_roles = "mgmt"
   }
 }
@@ -99,7 +99,7 @@ resource "aws_vpc_security_group_egress_rule" "allow_egress_mgt_all_ipv4" {
 
 resource "aws_vpc_security_group_egress_rule" "allow_egress_mgt_all_ipv6" {
   security_group_id = aws_security_group.mgt-sg.id
-  cidr_ipv6        = "::/0"
+  cidr_ipv6         = "::/0"
   ip_protocol       = "-1"
 
 }
@@ -133,7 +133,7 @@ resource "aws_instance" "bastion" {
   associate_public_ip_address = true
 
   tags = {
-    name = random_pet.bastion_name.id
+    name          = random_pet.bastion_name.id
     ansible_roles = "bastion"
   }
 }
