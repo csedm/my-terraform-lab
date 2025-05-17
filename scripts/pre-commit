@@ -1,0 +1,26 @@
+#!/bin/sh
+# Pre-commit hook to check for secrets using git-secrets and run terraform fmt
+
+# Check for secrets
+if command -v git-secrets >/dev/null 2>&1; then
+  git-secrets --scan
+else
+  echo "git-secrets not found! Please install it: https://github.com/awslabs/git-secrets"
+  exit 1
+fi
+
+# Run terraform fmt on staged .tf files and re-stage them if changed
+STAGED_FILES=$(git diff --cached --name-only --diff-filter=ACM | grep '\.tf$')
+
+if [ -z "$STAGED_FILES" ]; then
+  exit 0
+fi
+
+for file in $STAGED_FILES; do
+  if [ -f "$file" ]; then
+    terraform fmt "$file"
+    git add "$file"
+  fi
+done
+
+exit 0
