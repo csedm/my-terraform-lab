@@ -36,7 +36,7 @@ data "tfe_outputs" "storage_persistent" {
 
 resource "aws_key_pair" "terraform_ec2_key" {
   key_name   = "${terraform.workspace}-ssh-key"
-  public_key = file(var.ssh_public_key_file)
+  public_key = var.ssh_public_key
 }
 
 data "aws_ami" "alpine_custom" {

@@ -37,8 +37,8 @@ variable "aws_ami_owner_id" {
   type        = string
 }
 
-variable "ssh_public_key_file" {
-  description = "SSH public key file"
+variable "ssh_public_key" {
+  description = "SSH public key"
   type        = string
 }
 variable "permitted_cidrs_ipv4" {
