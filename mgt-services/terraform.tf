@@ -4,7 +4,7 @@ terraform {
     organization = "my-terraform-lab-csedm"
     workspaces {
       #name = "my-terraform-lab"
-      tags = ["mytflab-mgt-services"]
+      tags = ["mytflab","mgt-services"]
     }
   }
 
