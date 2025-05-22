@@ -35,14 +35,14 @@ jobs:
 
       - name: Terraform Init
         env:
-            TF_WORKSPACE: "${{ env.TF_WORKSPACE_PREFIX }}-${{ matrix.layer }}-${{ matrix.env }}"
+            WORKSPACE_NAME: "${{ env.TF_WORKSPACE_PREFIX }}-${{ matrix.layer }}-${{ matrix.env }}"
         run: terraform init -input=false
 
       - name: Terraform Select Workspace
         env:
-            TF_WORKSPACE: "${{ env.TF_WORKSPACE_PREFIX }}-${{ matrix.layer }}-${{ matrix.env }}"
+            WORKSPACE_NAME: "${{ env.TF_WORKSPACE_PREFIX }}-${{ matrix.layer }}-${{ matrix.env }}"
         run: |
-          terraform workspace select "$TF_WORKSPACE" || terraform workspace new "$TF_WORKSPACE"
+          terraform workspace select "$WORKSPACE_NAME" || terraform workspace new "$WORKSPACE_NAME"
 
       - name: Terraform Format Check
         if: matrix.env == 'dev'
