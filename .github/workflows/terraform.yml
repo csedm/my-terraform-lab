@@ -17,7 +17,7 @@ jobs:
     strategy:
       matrix:
         layer: ["mgt-services", "network-core", "storage-persistent"]
-        env: ["dev", "tst", "prd"]
+        env: ["dev"] # removing [, "tst", "prd"] until we get them created.
     defaults:
       run:
         working-directory: ${{ matrix.layer }}
@@ -34,8 +34,6 @@ jobs:
           cli_config_credentials_token: ${{ secrets.TF_CLOUD_TOKEN }}
 
       - name: Terraform Init
-        env:
-            WORKSPACE_NAME: "${{ env.TF_WORKSPACE_PREFIX }}-${{ matrix.layer }}-${{ matrix.env }}"
         run: terraform init -input=false
 
       - name: Terraform Select Workspace
