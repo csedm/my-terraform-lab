@@ -16,7 +16,6 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read # for actions/checkout to fetch code
-      security-events: write # for GitHub/codeql-action/upload-sarif to upload SARIF results
     strategy:
       matrix:
         layer: ["mgt-services", "network-core", "storage-persistent"]
@@ -57,11 +56,19 @@ jobs:
         env:
             TF_WORKSPACE: "${{ env.TF_WORKSPACE_PREFIX }}-${{ matrix.layer }}-${{ matrix.env }}"
         run: terraform validate
+    
+    #
+#      - name: Terraform Apply
+#        if: github.ref == 'refs/heads/main'
+#        run: terraform apply -auto-approve
 
   checkov:
     name: Checkov Scan
     runs-on: ubuntu-latest
     needs: terraform
+    permissions:
+      contents: read # for actions/checkout to fetch code
+      security-events: write # for GitHub/codeql-action/upload-sarif to upload SARIF results
     strategy:
       matrix:
         layer: ["mgt-services", "network-core", "storage-persistent"]
@@ -82,7 +89,3 @@ jobs:
         if: success() || failure()
         with:
             sarif_file: results.sarif
-#
-#      - name: Terraform Apply
-#        if: github.ref == 'refs/heads/main'
-#        run: terraform apply -auto-approve
