@@ -1,11 +1,25 @@
 #!/bin/sh
-# Pre-commit hook to check for secrets using git-secrets and run terraform fmt
+# Pre-commit hook to check for secrets using detect-secrets and run terraform fmt
 
-# Check for secrets
-if command -v git-secrets >/dev/null 2>&1; then
-  git-secrets --scan
+# Create Python virtual environment if it doesn't exist
+if [ ! -d ".venv" ]; then
+  echo "Creating Python virtual environment..."
+  python3 -m venv .venv
+  . .venv/bin/activate
+  pip install -r requirements.txt
 else
-  echo "git-secrets not found! Please install it: https://github.com/awslabs/git-secrets"
+  . .venv/bin/activate
+fi
+
+# Check for secrets using detect-secrets
+if command -v detect-secrets >/dev/null 2>&1; then
+  detect-secrets-hook --baseline .secrets.baseline
+  if [ $? -ne 0 ]; then
+    echo "detect-secrets found potential secrets. Please review and remove them."
+    exit 1
+  fi
+else
+  echo "detect-secrets not found! Please install it: https://github.com/Yelp/detect-secrets"
   exit 1
 fi
 
