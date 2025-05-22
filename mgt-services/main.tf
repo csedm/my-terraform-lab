@@ -63,6 +63,10 @@ resource "aws_instance" "mgt" {
   vpc_security_group_ids      = [aws_security_group.mgt-sg.id]
   user_data_replace_on_change = true
 
+  root_block_device {
+    encrypted = true
+  }
+
   user_data = templatefile("mount-efs.tftpl", {
     efs_id = data.tfe_outputs.storage_persistent.values.efs_file_system_id
   })
@@ -131,6 +135,10 @@ resource "aws_instance" "bastion" {
   subnet_id                   = data.tfe_outputs.network_core_outputs.values.aws_subnets_public[0].id
   vpc_security_group_ids      = [aws_security_group.bastion-sg.id]
   associate_public_ip_address = true
+
+  root_block_device {
+    encrypted = true
+  }
 
   tags = {
     name          = random_pet.bastion_name.id
