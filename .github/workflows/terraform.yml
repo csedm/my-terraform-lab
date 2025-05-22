@@ -1,0 +1,60 @@
+name: Terraform CI/CD
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+    branches: ["**"]
+
+env:
+    TF_IN_AUTOMATION: true
+    TF_WORKSPACE_PREFIX: "mytflab"
+
+jobs:
+  terraform:
+    name: Terraform Fmt & Validate
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        layer: ["mgt-services", "network-core", "storage-persistent"]
+        env: ["dev"] # removing [, "tst", "prd"] until we get them created.
+    defaults:
+      run:
+        working-directory: ${{ matrix.layer }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v3
+        env:
+          TF_CLOUD_TOKEN: ${{ secrets.TF_CLOUD_TOKEN }}
+        with:
+          terraform_version: 1.11.0
+          cli_config_credentials_token: ${{ secrets.TF_CLOUD_TOKEN }}
+
+      - name: Terraform Init
+        env:
+            TF_WORKSPACE: "${{ env.TF_WORKSPACE_PREFIX }}-${{ matrix.layer }}-${{ matrix.env }}"
+        run: terraform init -input=false && terraform workspace list
+
+      # Removing step as the previous step should be sufficient.
+      #  - name: Terraform Select Workspace
+      # env:
+      #     WORKSPACE_NAME: "${{ env.TF_WORKSPACE_PREFIX }}-${{ matrix.layer }}-${{ matrix.env }}"
+      # run: |
+      #   terraform workspace select "$WORKSPACE_NAME" || terraform workspace new "$WORKSPACE_NAME"
+
+      - name: Terraform Format Check
+        if: matrix.env == 'dev'
+        run: terraform fmt -check -recursive
+
+      - name: Terraform Validate
+        if: matrix.env == 'dev'
+        env:
+            TF_WORKSPACE: "${{ env.TF_WORKSPACE_PREFIX }}-${{ matrix.layer }}-${{ matrix.env }}"
+        run: terraform validate
+#
+#      - name: Terraform Apply
+#        if: github.ref == 'refs/heads/main'
+#        run: terraform apply -auto-approve
