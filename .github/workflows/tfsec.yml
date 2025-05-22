@@ -1,8 +1,3 @@
-# This workflow uses actions that are not certified by GitHub.
-# They are provided by a third-party and are governed by
-# separate terms of service, privacy policy, and support
-# documentation.
-
 name: tfsec
 
 on:
@@ -19,7 +14,13 @@ jobs:
       actions: read
       contents: read
       security-events: write
-
+    strategy:
+      matrix:
+        layer: ["mgt-services", "network-core", "storage-persistent"]
+        env: ["dev"]
+    defaults:
+      run:
+        working-directory: ${{ matrix.layer }}
     steps:
       - name: Clone repo
         uses: actions/checkout@v4
@@ -32,5 +33,4 @@ jobs:
       - name: Upload SARIF file
         uses: github/codeql-action/upload-sarif@v3
         with:
-          # Path to SARIF file relative to the root of the repository
           sarif_file: tfsec.sarif
