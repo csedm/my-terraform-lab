@@ -14,6 +14,8 @@ jobs:
   terraform:
     name: Terraform Fmt & Validate
     runs-on: ubuntu-latest
+    permissions:
+      contents: read # for actions/checkout to fetch code
     strategy:
       matrix:
         layer: ["mgt-services", "network-core", "storage-persistent"]
@@ -54,7 +56,36 @@ jobs:
         env:
             TF_WORKSPACE: "${{ env.TF_WORKSPACE_PREFIX }}-${{ matrix.layer }}-${{ matrix.env }}"
         run: terraform validate
-#
+    
+    #
 #      - name: Terraform Apply
 #        if: github.ref == 'refs/heads/main'
 #        run: terraform apply -auto-approve
+
+  checkov:
+    name: Checkov Scan
+    runs-on: ubuntu-latest
+    needs: terraform
+    permissions:
+      contents: read # for actions/checkout to fetch code
+      security-events: write # for GitHub/codeql-action/upload-sarif to upload SARIF results
+    strategy:
+      matrix:
+        layer: ["mgt-services", "network-core", "storage-persistent"]
+        env: ["dev"]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run checkov
+        id: checkov
+        uses: bridgecrewio/checkov-action@master
+        with:
+          directory: ${{ matrix.layer }}
+          soft_fail: true
+
+      - name: Upload SARIF file
+        uses: GitHub/codeql-action/upload-sarif@v2
+        if: success() || failure()
+        with:
+            sarif_file: results.sarif
