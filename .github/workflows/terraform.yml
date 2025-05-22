@@ -35,8 +35,8 @@ jobs:
 
       - name: Terraform Init
         env:
-            WORKSPACE_NAME: "${{ env.TF_WORKSPACE_PREFIX }}-${{ matrix.layer }}-${{ matrix.env }}"
-        run: echo "$WORKSPACE_NAME" | terraform init -input=false && terraform workspace list
+            TF_WORKSPACE: "${{ env.TF_WORKSPACE_PREFIX }}-${{ matrix.layer }}-${{ matrix.env }}"
+        run: terraform init -input=false && terraform workspace list
 
       - name: Terraform Select Workspace
         env:
