@@ -33,14 +33,28 @@ jobs:
           terraform_version: 1.11.0
           cli_config_credentials_token: ${{ secrets.TF_CLOUD_TOKEN }}
 
+      - name: Terraform Init
+        run: |
+          # Ignores missing default workspace error
+          set +e
+          terraform init -input=false 2>init.log
+          status=$?
+          if [ $status -ne 0 ]; then
+            if grep -q 'Currently selected workspace "default" does not exist' init.log; then
+              echo "Ignoring missing default workspace error"
+              exit 0
+            else
+              cat init.log
+              exit $status
+            fi
+          fi
+          exit 0
+
       - name: Terraform Select Workspace
         run: |
           WORKSPACE_NAME="${{ env.TF_WORKSPACE_PREFIX }}-${{ matrix.layer }}-${{ matrix.env }}"
           terraform workspace select "$WORKSPACE_NAME" || terraform workspace new "$WORKSPACE_NAME"
 
-      - name: Terraform Init
-        run: terraform init -input=false
-      
       - name: Terraform Format Check
         if: matrix.env == 'dev'
         run: terraform fmt -check -recursive
