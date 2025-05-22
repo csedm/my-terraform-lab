@@ -58,13 +58,25 @@ jobs:
             TF_WORKSPACE: "${{ env.TF_WORKSPACE_PREFIX }}-${{ matrix.layer }}-${{ matrix.env }}"
         run: terraform validate
 
+  checkov:
+    name: Checkov Scan
+    runs-on: ubuntu-latest
+    needs: terraform
+    strategy:
+      matrix:
+        layer: ["mgt-services", "network-core", "storage-persistent"]
+        env: ["dev"]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
       - name: Run checkov
         id: checkov
         uses: bridgecrewio/checkov-action@master
         with:
-            directory: ${{ matrix.layer }}
-            soft_fail: true
-    
+          directory: ${{ matrix.layer }}
+          soft_fail: true
+
       - name: Upload SARIF file
         uses: GitHub/codeql-action/upload-sarif@v2
         if: success() || failure()
