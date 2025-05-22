@@ -51,6 +51,8 @@ jobs:
 
       - name: Terraform Validate
         if: matrix.env == 'dev'
+        env:
+            TF_WORKSPACE: "${{ env.TF_WORKSPACE_PREFIX }}-${{ matrix.layer }}-${{ matrix.env }}"
         run: terraform validate
 #
 #      - name: Terraform Apply
