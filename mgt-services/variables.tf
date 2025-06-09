@@ -13,7 +13,7 @@ variable "tfe_token" {
   sensitive   = true
 }
 variable "region" {
-  default = "us-east-2"
+  default = "us-east-1"
 }
 variable "ec2_instance_type" {
   description = "EC2 instance type"

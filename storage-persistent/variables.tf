@@ -8,10 +8,10 @@ variable "tfe_token" {
   sensitive   = true
 }
 variable "region" {
-  default = "us-east-2"
+  default = "us-east-1"
 }
 variable "availability_zone" {
-  default = "us-east-2a"
+  default = "us-east-1a"
 }
 variable "env_map" {
   type = map(any)

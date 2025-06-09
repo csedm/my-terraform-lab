@@ -4,10 +4,10 @@ variable "origin_repo" {
   default     = "my-terraform-lab"
 }
 variable "region" {
-  default = "us-east-2"
+  default = "us-east-1"
 }
 variable "availability_zone" {
-  default = "us-east-2a"
+  default = "us-east-1a"
 }
 variable "number_availability_zones" {
   description = "Number of availability zones to use"
