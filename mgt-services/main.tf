@@ -46,6 +46,10 @@ data "aws_ami" "alpine_custom" {
     values = ["alpine-${var.ami_base_version}-${var.ami_architecture}-bios-cloudinit-custom*"]
   }
   filter {
+    name   = "tag:BuildType"
+    values = [local.environment]
+  }
+  filter {
     name   = "virtualization-type"
     values = ["hvm"]
   }
@@ -139,6 +143,11 @@ resource "aws_instance" "bastion" {
   root_block_device {
     encrypted = true
   }
+
+  user_data = templatefile("cloud-init.yml.tftpl", {
+    ssh_authorized_keys = [ var.ssh_public_key ]
+    custom_default_user = "localadmin"
+  })
 
   tags = {
     Name          = random_pet.bastion_name.id

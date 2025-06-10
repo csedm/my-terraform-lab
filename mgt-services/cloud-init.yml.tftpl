@@ -1,0 +1,17 @@
+#cloud-config
+# This is a custom cloud-init template specific to our Alpine images customized by our Packer template.
+# The user: override does not work on alpine, so we customized it at the Packer level.
+# Options must be set here in cloud-init a particular way to get the expected behavior.
+#
+# 1. - default should not be specified, as it would create the alpine user, which we don't want. 
+# 2. For users:, we must specify our customized default user setup by our packer template.
+#    The default user must include the lock_passwd: false and passwd: "*" to ensure the user is not locked after cloud-init runs.
+# 3. Additional users can be specified as needed with no impact, however all must have the same two options in order for ssh login to work.
+users:
+  - name: "${custom_default_user}"
+    ssh_authorized_keys:
+%{ for key in ssh_authorized_keys ~}
+    - ${key}
+%{ endfor ~}
+    lock_passwd: false
+    passwd: "*"
