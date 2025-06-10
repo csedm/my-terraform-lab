@@ -26,11 +26,13 @@ module "ssm_parameters" {
       name = "/${var.origin_repo}/${local.environment}/bastion_host"
       value = aws_instance.bastion.public_ip
       type = "String"
+      overwrite = true
     },
     {
       name = "/${var.origin_repo}/${local.environment}/bastion_host_ipv6"
       value = aws_instance.bastion.ipv6_addresses[0]
       type = "String"
+      overwrite = true
     }
   ]
 }
