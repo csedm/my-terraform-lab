@@ -7,11 +7,9 @@
 # 2. For users:, we must specify our customized default user setup by our packer template.
 #    The default user must include the lock_passwd: false and passwd: "*" to ensure the user is not locked after cloud-init runs.
 # 3. Additional users can be specified as needed with no impact, however all must have the same two options in order for ssh login to work.
-users:
-  - name: "${custom_default_user}"
-    ssh_authorized_keys:
+ssh_authorized_keys:
 %{ for key in ssh_authorized_keys ~}
-    - ${key}
+  - ${key}
 %{ endfor ~}
-    lock_passwd: false
-    passwd: "*"
+users:
+  - default
