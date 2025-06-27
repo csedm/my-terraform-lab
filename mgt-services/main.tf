@@ -12,8 +12,6 @@ provider "aws" {
   }
 }
 
-provider "random" {}
-
 provider "tfe" {
   organization = var.tfe_organization
   token        = var.tfe_token
@@ -56,8 +54,6 @@ data "aws_ami" "alpine_custom" {
   owners = [var.aws_ami_owner_id]
 }
 
-resource "random_pet" "mgt_name" {}
-
 resource "aws_instance" "mgt" {
   ami                         = data.aws_ami.alpine_custom.id
   instance_type               = var.ec2_instance_type
@@ -76,7 +72,7 @@ resource "aws_instance" "mgt" {
   })
 
   tags = {
-    Name          = random_pet.mgt_name.id
+    Name          = "mgt1"
     ansible_roles = "mgmt"
   }
 }
@@ -128,9 +124,6 @@ resource "aws_vpc_security_group_egress_rule" "allow_egress_efs" {
 }
 
 # Bastion Host
-
-resource "random_pet" "bastion_name" {}
-
 resource "aws_instance" "bastion" {
   ami                         = data.aws_ami.alpine_custom.id
   instance_type               = var.ec2_instance_type
@@ -150,7 +143,7 @@ resource "aws_instance" "bastion" {
   })
 
   tags = {
-    Name          = random_pet.bastion_name.id
+    Name          = "sshgw1"
     ansible_roles = "sshbastion"
   }
 }
