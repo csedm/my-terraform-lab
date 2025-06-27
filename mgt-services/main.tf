@@ -151,7 +151,7 @@ resource "aws_instance" "bastion" {
 
   tags = {
     Name          = random_pet.bastion_name.id
-    ansible_roles = "bastion"
+    ansible_roles = "sshbastion"
   }
 }
 
