@@ -124,10 +124,6 @@ resource "aws_vpc_security_group_egress_rule" "allow_egress_efs" {
 }
 
 # Bastion Host
-resource "aws_eip" "bastion_eip" {
-  instance = aws_instance.bastion.id
-}
-
 resource "aws_instance" "bastion" {
   ami                         = data.aws_ami.alpine_custom.id
   instance_type               = var.ec2_instance_type
