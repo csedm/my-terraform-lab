@@ -18,20 +18,20 @@ output "bastion_security_group_id" {
 }
 
 module "ssm_parameters" {
-  source = "cloudposse/ssm-parameter-store/aws"
+  source  = "cloudposse/ssm-parameter-store/aws"
   version = "0.13.0"
 
   parameter_write = [
     {
-      name = "/${var.origin_repo}/${local.environment}/bastion_host"
-      value = aws_instance.bastion.public_ip
-      type = "String"
+      name      = "/${var.origin_repo}/${local.environment}/bastion_host"
+      value     = aws_instance.bastion.public_ip
+      type      = "String"
       overwrite = true
     },
     {
-      name = "/${var.origin_repo}/${local.environment}/bastion_host_ipv6"
-      value = aws_instance.bastion.ipv6_addresses[0]
-      type = "String"
+      name      = "/${var.origin_repo}/${local.environment}/bastion_host_ipv6"
+      value     = aws_instance.bastion.ipv6_addresses[0]
+      type      = "String"
       overwrite = true
     }
   ]
