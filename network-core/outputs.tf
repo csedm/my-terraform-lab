@@ -6,6 +6,10 @@ output "aws_vpc_ipv4_cidr_block" {
   description = "AWS VPC IPv4 CIDR Block"
   value       = aws_vpc.mytf.cidr_block
 }
+output "aws_igw_id" {
+  description = "AWS internet gateway ID"
+  value = aws_internet_gateway.gw.id
+}
 output "aws_vpc_ipv6_cidr_block" {
   description = "AWS VPC IPv6 CIDR Block"
   value       = aws_vpc.mytf.ipv6_cidr_block
