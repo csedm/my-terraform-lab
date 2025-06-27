@@ -138,7 +138,7 @@ resource "aws_instance" "bastion" {
   }
 
   user_data = templatefile("cloud-init.yml.tftpl", {
-    ssh_authorized_keys = [ var.ssh_public_key ]
+    ssh_authorized_keys = [var.ssh_public_key]
     custom_default_user = "localadmin"
   })
 
