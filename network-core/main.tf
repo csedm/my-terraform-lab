@@ -56,6 +56,12 @@ resource "aws_route" "ipv6-egress-route" {
   gateway_id                  = aws_internet_gateway.gw.id
 }
 
+resource "aws_route" "ipv4-egress-route" {
+  route_table_id         = aws_route_table.public.id
+  destination_cidr_block = "0.0.0.0/0"
+  gateway_id             = aws_internet_gateway.gw.id
+}
+
 resource "aws_route_table_association" "public" {
   count          = var.number_availability_zones
   subnet_id      = aws_subnet.public[count.index].id
@@ -88,7 +94,8 @@ resource "aws_subnet" "public" {
   ipv6_cidr_block                 = cidrsubnet(aws_vpc.mytf.ipv6_cidr_block, 8, count.index * 2)
   map_public_ip_on_launch         = true
   assign_ipv6_address_on_creation = true
-  depends_on                      = [aws_internet_gateway.gw]
+  #enable_dns64                    = true
+  depends_on = [aws_internet_gateway.gw]
 }
 
 resource "aws_subnet" "private" {
@@ -100,4 +107,10 @@ resource "aws_subnet" "private" {
   ipv6_cidr_block                 = cidrsubnet(aws_vpc.mytf.ipv6_cidr_block, 8, count.index * 2 + 1)
   assign_ipv6_address_on_creation = true
   depends_on                      = [aws_internet_gateway.gw]
+}
+
+resource "aws_service_discovery_private_dns_namespace" "main" {
+  name        = var.service_discovery_namespace
+  description = "Private namespace for VPC services"
+  vpc         = aws_vpc.mytf.id
 }

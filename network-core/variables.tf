@@ -25,3 +25,8 @@ variable "vpc_ipv6_cidr_block" {
   type        = string
   default     = "fd00::/56"
 }*/
+variable "service_discovery_namespace" {
+  description = "Service discovery namespace for ECS services"
+  type        = string
+  default     = "mytflab.local"
+}
