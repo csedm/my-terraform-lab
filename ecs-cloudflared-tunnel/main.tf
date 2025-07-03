@@ -199,7 +199,7 @@ resource "aws_cloudwatch_metric_alarm" "alarm_cloudflared_idle" {
   metric_name         = "CPUUtilization"
   namespace           = "AWS/ECS"
   period              = 300
-  statistic           = "Maximum"
+  statistic           = "Average"
   threshold           = 1.5
 
   dimensions = {
