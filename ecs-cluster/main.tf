@@ -23,6 +23,8 @@ data "tfe_outputs" "network_core" {
   workspace    = local.network_core_workspace_name
 }
 
+data "aws_caller_identity" "current" {}
+
 resource "aws_ecs_cluster" "ecs_cluster" {
   name = "ecs-cluster-${local.environment}"
 
@@ -89,11 +91,22 @@ resource "aws_iam_role_policy" "ecs_ssm_access" {
         Effect = "Allow"
         Action = [
           "ssm:GetParameters",
-          "ssm:GetParameter",
-          "secretsmanager:GetSecretValue",
+          "ssm:GetParameter"
+        ]
+        # Least privilege: restrict to all SSM parameters in this account/region
+        Resource = [
+          "arn:aws:ssm:${var.region}:${data.aws_caller_identity.current.account_id}:parameter/*"
+        ]
+      },
+      {
+        Effect = "Allow"
+        Action = [
           "kms:Decrypt"
         ]
-        Resource = "*"
+        # Use the AWS managed KMS key for SSM Parameter Store
+        Resource = [
+          "arn:aws:kms:${var.region}:${data.aws_caller_identity.current.account_id}:alias/aws/ssm"
+        ]
       }
     ]
   })
@@ -113,9 +126,8 @@ resource "aws_iam_role_policy" "ecs_logs" {
           "logs:PutLogEvents",
           "logs:DescribeLogStreams"
         ]
-        Resource = "arn:aws:logs:*:*:log-group:/ecs/web-poc*"
+        Resource = "arn:aws:logs:${var.region}:${data.aws_caller_identity.current.account_id}:log-group:/ecs/*"
       }
     ]
   })
 }
-###
