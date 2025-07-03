@@ -8,7 +8,7 @@ output "aws_vpc_ipv4_cidr_block" {
 }
 output "aws_igw_id" {
   description = "AWS internet gateway ID"
-  value = aws_internet_gateway.gw.id
+  value       = aws_internet_gateway.gw.id
 }
 output "aws_vpc_ipv6_cidr_block" {
   description = "AWS VPC IPv6 CIDR Block"
@@ -43,4 +43,11 @@ output "aws_subnets_private" {
       availability_zone_id = subnet.availability_zone_id
     }
   ]
+}
+
+output "cloudmap_namespace_name" {
+  value = aws_service_discovery_private_dns_namespace.main.name
+}
+output "cloudmap_namespace_id" {
+  value = aws_service_discovery_private_dns_namespace.main.id
 }
