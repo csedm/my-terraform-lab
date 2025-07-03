@@ -41,8 +41,3 @@ variable "cloudflare_zone_id" {
   description = "cloudflare domain zone id"
   type        = string
 }
-
-# variable "network_core_workspace_base_name" {
-#   description = "The base name of the HCP Terraform workspace for the network core. The environment will be appended."
-#   type        = string
-# }
