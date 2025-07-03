@@ -43,6 +43,9 @@ output "aws_subnets_private" {
       availability_zone_id = subnet.availability_zone_id
     }
   ]
+  # apparently sometimes Terraform can mark something with 'private' in the name as sensitive
+  # so force it non-sensitive.
+  sensitive = false
 }
 
 output "cloudmap_namespace_name" {
