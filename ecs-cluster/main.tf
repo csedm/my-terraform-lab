@@ -14,7 +14,7 @@ provider "tfe" {
 }
 
 locals {
-  environment = regex("(prd|tst|dev)$", "${terraform.workspace}")[0]
+  environment                 = regex("(prd|tst|dev)$", "${terraform.workspace}")[0]
   network_core_workspace_name = "${var.network_core_workspace_base_name}-${local.environment}"
 }
 
