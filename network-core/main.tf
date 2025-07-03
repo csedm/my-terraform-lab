@@ -108,3 +108,13 @@ resource "aws_subnet" "private" {
   assign_ipv6_address_on_creation = true
   depends_on                      = [aws_internet_gateway.gw]
 }
+
+import {
+  id = "ns-4cg46qgcv5ajdufv:${aws_vpc.mytf.id}"
+  to = aws_service_discovery_private_dns_namespace.main
+}
+resource "aws_service_discovery_private_dns_namespace" "main" {
+  name        = var.service_discovery_namespace
+  description = "Private namespace for VPC services"
+  vpc         = aws_vpc.mytf.id
+}
