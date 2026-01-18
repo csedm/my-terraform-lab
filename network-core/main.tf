@@ -97,6 +97,9 @@ resource "aws_subnet" "public" {
   assign_ipv6_address_on_creation = true
   #enable_dns64                    = true
   depends_on = [aws_internet_gateway.gw]
+  tags = {
+    Name = "${var.origin_repo}-public-${data.aws_availability_zones.available.names[count.index]}-${local.environment}"
+  }
 }
 
 resource "aws_subnet" "private" {
@@ -108,6 +111,9 @@ resource "aws_subnet" "private" {
   ipv6_cidr_block                 = cidrsubnet(aws_vpc.mytf.ipv6_cidr_block, 8, count.index * 2 + 1)
   assign_ipv6_address_on_creation = true
   depends_on                      = [aws_internet_gateway.gw]
+  tags = {
+    Name = "${var.origin_repo}-private-${data.aws_availability_zones.available.names[count.index]}-${local.environment}"
+  }
 }
 
 resource "aws_service_discovery_private_dns_namespace" "main" {
