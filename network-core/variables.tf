@@ -6,9 +6,6 @@ variable "origin_repo" {
 variable "region" {
   default = "us-east-1"
 }
-variable "availability_zone" {
-  default = "us-east-1a"
-}
 variable "number_availability_zones" {
   description = "Number of availability zones to use"
   type        = number
