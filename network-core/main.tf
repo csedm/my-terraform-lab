@@ -14,6 +14,7 @@ provider "aws" {
 
 locals {
   environment = regex("(prd|tst|dev)$", "${terraform.workspace}")[0]
+  service_discovery_namespace = "${local.environment}.${var.service_discovery_namespace}"
 }
 
 data "aws_availability_zones" "available" {
@@ -110,7 +111,7 @@ resource "aws_subnet" "private" {
 }
 
 resource "aws_service_discovery_private_dns_namespace" "main" {
-  name        = var.service_discovery_namespace
+  name        = local.service_discovery_namespace
   description = "Private namespace for VPC services"
   vpc         = aws_vpc.mytf.id
 }
