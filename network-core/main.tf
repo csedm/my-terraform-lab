@@ -13,7 +13,7 @@ provider "aws" {
 }
 
 locals {
-  environment = regex("(prd|tst|dev)$", "${terraform.workspace}")[0]
+  environment                 = regex("(prd|tst|dev)$", "${terraform.workspace}")[0]
   service_discovery_namespace = "${local.environment}.${var.service_discovery_namespace}"
 }
 
