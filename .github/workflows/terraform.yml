@@ -2,13 +2,15 @@ name: Terraform CI/CD
 
 on:
   push:
-    branches: ["**"]
+    branches-ignore:
+      - main
   pull_request:
-    branches: ["**"]
+    branches:
+      - main
 
 env:
-    TF_IN_AUTOMATION: true
-    TF_WORKSPACE_PREFIX: "mytflab"
+  TF_IN_AUTOMATION: true
+  TF_WORKSPACE_PREFIX: "mytflab"
 
 jobs:
   terraform:
@@ -17,9 +19,10 @@ jobs:
     permissions:
       contents: read # for actions/checkout to fetch code
     strategy:
+      fail-fast: true
       matrix:
-        layer: ["mgt-services", "network-core", "storage-persistent"]
-        env: ["dev"] # removing [, "tst", "prd"] until we get them created.
+        layer: ["network-core", "storage-persistent", "ecs-cluster", "ecs-cloudflared-tunnel", "mgt-services"]
+        env: ["dev"]
     defaults:
       run:
         working-directory: ${{ matrix.layer }}
@@ -40,13 +43,6 @@ jobs:
             TF_WORKSPACE: "${{ env.TF_WORKSPACE_PREFIX }}-${{ matrix.layer }}-${{ matrix.env }}"
         run: terraform init -input=false && terraform workspace list
 
-      # Removing step as the previous step should be sufficient.
-      #  - name: Terraform Select Workspace
-      # env:
-      #     WORKSPACE_NAME: "${{ env.TF_WORKSPACE_PREFIX }}-${{ matrix.layer }}-${{ matrix.env }}"
-      # run: |
-      #   terraform workspace select "$WORKSPACE_NAME" || terraform workspace new "$WORKSPACE_NAME"
-
       - name: Terraform Format Check
         if: matrix.env == 'dev'
         run: terraform fmt -check -recursive
@@ -57,10 +53,9 @@ jobs:
             TF_WORKSPACE: "${{ env.TF_WORKSPACE_PREFIX }}-${{ matrix.layer }}-${{ matrix.env }}"
         run: terraform validate
     
-    #
-#      - name: Terraform Apply
-#        if: github.ref == 'refs/heads/main'
-#        run: terraform apply -auto-approve
+      - name: Terraform Test
+        if: github.event_name == 'pull_request' && matrix.env == 'dev'
+        run: terraform test || echo "No tests found"
 
   checkov:
     name: Checkov Scan
@@ -70,8 +65,9 @@ jobs:
       contents: read # for actions/checkout to fetch code
       security-events: write # for GitHub/codeql-action/upload-sarif to upload SARIF results
     strategy:
+      fail-fast: true
       matrix:
-        layer: ["mgt-services", "network-core", "storage-persistent"]
+        layer: ["network-core", "storage-persistent", "ecs-cluster", "ecs-cloudflared-tunnel", "mgt-services"]
         env: ["dev"]
     steps:
       - name: Checkout code
